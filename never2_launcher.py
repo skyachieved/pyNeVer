@@ -7,6 +7,10 @@ Authors: Stefano Demarchi, Pedro Achete
 
 """
 
+import time
+import tracemalloc
+
+
 import os
 from argparse import ArgumentParser
 
@@ -42,6 +46,11 @@ def add_options(p: ArgumentParser):
 
 
 if __name__ == '__main__':
+    # --- Benchmarking Start ---
+    tracemalloc.start()
+    start_time = time.time()
+    # --------------------------
+
     parser = ArgumentParser(prog='NeVer2',
                             description='Neural Network verifier',
                             epilog='Università degli Studi di Genova')
@@ -76,5 +85,15 @@ if __name__ == '__main__':
             cli.sslp_verify_single(False, args['model'], args['property'], args['strategy'], logfile)
         except NotImplementedError:
             exit(1)
+
+    end_time = time.time()
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print("\n" + "="*50)
+    print("BENCHMARKING RESULTS")
+    print("="*50)
+    print(f"Total Execution Time: {end_time - start_time:.2f} seconds")
+    print(f"Peak Memory Usage: {peak / 10**6:.2f} MB")
+    print("="*50)
 
     exit(0)
